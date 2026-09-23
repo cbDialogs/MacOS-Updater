@@ -100,7 +100,7 @@ struct SourceLabelTests {
         let caskroom = FileManager.default.temporaryDirectory
             .appendingPathComponent("caskroom-\(UUID().uuidString)")
         try FileManager.default.createDirectory(
-            at: caskroom.appendingPathComponent("firefox"), withIntermediateDirectories: true)
+            at: caskroom.appendingPathComponent("firefox/153.0.3"), withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: caskroom) }
 
         let firefox = InstalledApp(

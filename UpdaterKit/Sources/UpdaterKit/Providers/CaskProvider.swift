@@ -84,7 +84,7 @@ public struct CaskProvider: Sendable {
         // acting on it through brew would hit the /Applications copy instead.
         let inBrewAppdir = app.url.deletingLastPathComponent().path == "/Applications"
         let managed = inBrewAppdir && (caskroomRoot.map {
-            FileManager.default.fileExists(atPath: $0.appendingPathComponent(cask.token).path)
+            UpdatePlanner.caskroomRecordsInstall($0.appendingPathComponent(cask.token))
         } ?? false)
 
         return UpdateCandidate(

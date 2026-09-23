@@ -112,7 +112,7 @@ public enum UpdatePlanner {
                 )
             }
             let caskroom = caskroomURL(homebrewPath: brew, token: candidate.identifier)
-            let managed = FileManager.default.fileExists(atPath: caskroom.path)
+            let managed = caskroomRecordsInstall(caskroom)
             let strategy = homebrewStrategy(
                 for: candidate, managed: managed, caskroom: caskroom
             )
@@ -200,6 +200,15 @@ public enum UpdatePlanner {
             return .homebrewReinstall
         }
         return .homebrewUpgrade
+    }
+
+    /// Whether Homebrew considers the cask installed. A Caskroom entry holding only
+    /// `.metadata` — left behind by an interrupted upgrade — is *not* installed as far
+    /// as brew is concerned: `brew info` says "Not installed" and `brew upgrade` fails
+    /// with "Cask '<token>' is not installed". Chrome and Claude hit exactly this.
+    static func caskroomRecordsInstall(_ caskroom: URL) -> Bool {
+        let entries = (try? FileManager.default.contentsOfDirectory(atPath: caskroom.path)) ?? []
+        return entries.contains { !$0.hasPrefix(".") }
     }
 
     /// Homebrew stores each installed version as a directory named after it.

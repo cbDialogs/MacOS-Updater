@@ -106,6 +106,21 @@ struct UpdatePlannerTests {
         #expect(plan.arguments == ["upgrade", "--cask", "iterm2"])
     }
 
+    @Test("a Caskroom entry holding only metadata is not treated as installed")
+    func metadataOnlyCaskroomIsUnmanaged() throws {
+        // Regression: Chrome and Claude were left with just Caskroom/<token>/.metadata.
+        // brew calls that "Not installed", so `brew upgrade` failed every time.
+        let brew = try FakeBrew(); defer { brew.cleanup() }
+        try brew.addCaskroomEntry("google-chrome/.metadata")
+        let plan = UpdatePlanner.plan(
+            for: Self.candidate(source: .homebrew, identifier: "google-chrome"),
+            tools: ToolAvailability(homebrewPath: brew.brewPath, masPath: nil),
+            runningBundleIDs: []
+        )
+        #expect(plan.strategy == .homebrewInstallOver)
+        #expect(plan.arguments == ["install", "--cask", "--force", "google-chrome"])
+    }
+
     @Test("a cask needing root is handed to Terminal, never run silently")
     func adminGoesToTerminal() throws {
         let brew = try FakeBrew(); defer { brew.cleanup() }

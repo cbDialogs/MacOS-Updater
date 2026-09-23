@@ -49,8 +49,8 @@ public enum RemovalPlanner {
         if let candidate, candidate.source == .homebrew,
            app.url.deletingLastPathComponent().path == "/Applications",
            let brew = tools.homebrewPath,
-           FileManager.default.fileExists(
-               atPath: UpdatePlanner.caskroomURL(homebrewPath: brew, token: candidate.identifier).path
+           UpdatePlanner.caskroomRecordsInstall(
+               UpdatePlanner.caskroomURL(homebrewPath: brew, token: candidate.identifier)
            ) {
             return RemovalPlan(
                 app: app,
